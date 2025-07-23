@@ -5,8 +5,14 @@ import joblib
 import numpy as np
 
 # Load model and scaler
-model = joblib.load("/Users/mizeroreine/Desktop/docs/ALU/linear_regression_model/summative/API/model/best_water_usage_model.pkl")
-scaler = joblib.load("/Users/mizeroreine/Desktop/docs/ALU/linear_regression_model/summative/API/model/feature_scaler.pkl")
+import os
+
+# Use relative paths for model files
+model_path = os.path.join(os.path.dirname(__file__), "model", "best_water_usage_model.pkl")
+scaler_path = os.path.join(os.path.dirname(__file__), "model", "feature_scaler.pkl")
+
+model = joblib.load(model_path)
+scaler = joblib.load(scaler_path)
 
 app = FastAPI(
     title="Water Usage Predictor API",
