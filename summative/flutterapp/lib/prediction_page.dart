@@ -103,7 +103,10 @@ class _PredictionPageState extends State<PredictionPage> {
             hintStyle: TextStyle(color: Colors.grey[600]),
             filled: true,
             fillColor: Colors.white,
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 16,
+            ),
           ),
           validator: (value) {
             if (value == null || value.isEmpty) {
@@ -252,21 +255,21 @@ class _PredictionPageState extends State<PredictionPage> {
                       elevation: 0,
                     ),
                     child: isLoading
-                      ? const SizedBox(
-                          height: 20,
-                          width: 20,
-                          child: CircularProgressIndicator(
-                            color: Colors.white,
-                            strokeWidth: 2,
+                        ? const SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2,
+                            ),
+                          )
+                        : const Text(
+                            "Predict Water Efficiency",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                        )
-                      : const Text(
-                          "Predict Water Efficiency",
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
                   ),
                 ),
                 const SizedBox(height: 24),
@@ -274,7 +277,7 @@ class _PredictionPageState extends State<PredictionPage> {
                   Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(16),
-                      color: Colors.grey[400],
+                      color: Colors.grey[100],
                       border: Border.all(
                         color: _getEfficiencyColor(predictionValue),
                         width: 2,
@@ -289,50 +292,52 @@ class _PredictionPageState extends State<PredictionPage> {
                     ),
                     padding: const EdgeInsets.all(20),
                     child: Column(
-                        children: [
-                          Icon(
-                            _getEfficiencyIcon(predictionValue),
-                            size: 48,
+                      children: [
+                        Icon(
+                          _getEfficiencyIcon(predictionValue),
+                          size: 48,
+                          color: _getEfficiencyColor(predictionValue),
+                        ),
+                        const SizedBox(height: 12),
+                        Text(
+                          "Water Efficiency",
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          resultMessage,
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
                             color: _getEfficiencyColor(predictionValue),
                           ),
-                          const SizedBox(height: 12),
-                          Text(
-                            "Water Efficiency",
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.grey[600],
-                            ),
+                        ),
+                        const SizedBox(height: 12),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 8,
                           ),
-                          const SizedBox(height: 8),
-                          Text(
-                            resultMessage,
+                          decoration: BoxDecoration(
+                            color: _getEfficiencyColor(
+                              predictionValue,
+                            ).withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Text(
+                            _getEfficiencyMessage(predictionValue),
+                            textAlign: TextAlign.center,
                             style: TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
                               color: _getEfficiencyColor(predictionValue),
                             ),
                           ),
-                          const SizedBox(height: 12),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 8,
-                            ),
-                            decoration: BoxDecoration(
-                              color: _getEfficiencyColor(predictionValue).withOpacity(0.2),
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Text(
-                              _getEfficiencyMessage(predictionValue),
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                                color: _getEfficiencyColor(predictionValue),
-                              ),
-                            ),
-                          ),
-                        ],
+                        ),
+                      ],
                     ),
                   ),
               ],
