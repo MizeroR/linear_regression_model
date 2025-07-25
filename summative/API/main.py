@@ -1,26 +1,17 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 from fastapi.middleware.cors import CORSMiddleware
 import joblib
 import numpy as np
 
-# Load model and scaler
-import os
+# Load model and scaler once at startup
+model = joblib.load('model/water_efficiency_model.pkl')
+scaler = joblib.load('model/weather_scaler.pkl')
 
-# Use relative paths for model files
-model_path = os.path.join(os.path.dirname(__file__), "model", "best_water_usage_model.pkl")
-scaler_path = os.path.join(os.path.dirname(__file__), "model", "feature_scaler.pkl")
+# FastAPI app
+app = FastAPI(title="Water Efficiency Prediction API")
 
-model = joblib.load(model_path)
-scaler = joblib.load(scaler_path)
-
-app = FastAPI(
-    title="Water Usage Predictor API",
-    description="Predicts yearly water usage based on daily usage and population.",
-    version="1.0.0"
-)
-
-# Allow CORS for all origins (you can restrict later if needed)
+# Add CORS middleware (allow all origins for now)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -29,17 +20,22 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Define input model using Pydantic
-class WaterUsageInput(BaseModel):
-    daily_water_usage: float = Field(..., gt=0, lt=1000, description="Average daily water usage per capita in liters (0–1000)")
-    population: float = Field(..., gt=1000, lt=2e9, description="Population of the country (1000 to 2 billion)")
+# Define Pydantic model with types and constraints
+class WeatherInput(BaseModel):
+    temperature: float = Field(..., ge=-50, le=60, description="Temperature in °C")
+    humidity: float = Field(..., ge=0, le=100, description="Humidity in %")
+    wind_speed: float = Field(..., ge=0, le=150, description="Wind speed in km/h")
+    precipitation: float = Field(..., ge=0, le=500, description="Precipitation in mm")
 
-# POST endpoint for predictions
-@app.post("/predict")
-def predict_usage(data: WaterUsageInput):
-    features = np.array([[data.daily_water_usage, data.population]])
-    scaled = scaler.transform(features)
-    prediction = model.predict(scaled)
-    return {
-        "predicted_yearly_water_usage": float(prediction[0])
-    }
+@app.post("/predict", summary="Predict Water Efficiency")
+def predict_water_efficiency(data: WeatherInput):
+    try:
+        input_data = np.array([[data.temperature, data.humidity, data.wind_speed, data.precipitation]])
+        input_scaled = scaler.transform(input_data)
+        prediction = model.predict(input_scaled)
+        return {
+            "predicted_water_efficiency": round(prediction[0], 4),
+            "unit": "L/KWh"
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Prediction failed: {str(e)}")
