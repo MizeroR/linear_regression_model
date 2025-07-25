@@ -114,6 +114,20 @@ class _PredictionPageState extends State<PredictionPage> {
             }
             final num? val = num.tryParse(value);
             if (val == null) return 'Invalid number';
+            
+            // Range validation
+            if (fieldName == 'temperature' && (val < -50 || val > 60)) {
+              return 'Temperature must be between -50°C and 60°C';
+            }
+            if (fieldName == 'humidity' && (val < 0 || val > 100)) {
+              return 'Humidity must be between 0% and 100%';
+            }
+            if (fieldName == 'wind speed' && (val < 0 || val > 150)) {
+              return 'Wind speed must be between 0 and 150 km/h';
+            }
+            if (fieldName == 'precipitation' && (val < 0 || val > 500)) {
+              return 'Precipitation must be between 0 and 500 mm';
+            }
             return null;
           },
         ),
@@ -162,9 +176,7 @@ class _PredictionPageState extends State<PredictionPage> {
         elevation: 0,
       ),
       body: Container(
-        decoration: const BoxDecoration(
-          color: Color(0xFF1A237E),
-        ),
+        decoration: const BoxDecoration(color: Color(0xFF1A237E)),
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(20.0),
           child: Form(
@@ -204,7 +216,7 @@ class _PredictionPageState extends State<PredictionPage> {
                         ),
                         const SizedBox(height: 20),
                         buildTextField(
-                          "Temperature (°C) [-10 to 45]",
+                          "Temperature (°C) [-50 to 60]",
                           tempController,
                           "temperature",
                           Icons.thermostat,
@@ -216,13 +228,13 @@ class _PredictionPageState extends State<PredictionPage> {
                           Icons.opacity,
                         ),
                         buildTextField(
-                          "Wind Speed (km/h) [0 to 50]",
+                          "Wind Speed (km/h) [0 to 150]",
                           windController,
                           "wind speed",
                           Icons.air,
                         ),
                         buildTextField(
-                          "Precipitation (mm) [0 to 200]",
+                          "Precipitation (mm) [0 to 500]",
                           precipController,
                           "precipitation",
                           Icons.grain,
