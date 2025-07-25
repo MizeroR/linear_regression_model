@@ -18,6 +18,7 @@ class _PredictionPageState extends State<PredictionPage> {
   final precipController = TextEditingController();
 
   String resultMessage = '';
+  double? predictionValue;
   bool isLoading = false;
 
   Future<void> predict() async {
@@ -46,18 +47,21 @@ class _PredictionPageState extends State<PredictionPage> {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
+        final efficiency = data['predicted_water_efficiency'];
         setState(() {
-          resultMessage =
-              "✅ Predicted Water Efficiency: ${data['predicted_water_efficiency']} ${data['unit']}";
+          predictionValue = efficiency;
+          resultMessage = "${efficiency.toStringAsFixed(2)} ${data['unit']}";
         });
       } else {
         setState(() {
-          resultMessage = "❌ Error: ${response.body}";
+          predictionValue = null;
+          resultMessage = "Error: ${response.body}";
         });
       }
     } catch (e) {
       setState(() {
-        resultMessage = "❌ Failed to connect: $e";
+        predictionValue = null;
+        resultMessage = "Failed to connect: $e";
       });
     } finally {
       setState(() {
@@ -70,26 +74,69 @@ class _PredictionPageState extends State<PredictionPage> {
     String label,
     TextEditingController controller,
     String fieldName,
+    IconData icon,
   ) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
-      child: TextFormField(
-        controller: controller,
-        keyboardType: TextInputType.number,
-        decoration: InputDecoration(
-          border: OutlineInputBorder(),
-          labelText: label,
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 8,
+              offset: const Offset(0, 4),
+            ),
+          ],
         ),
-        validator: (value) {
-          if (value == null || value.isEmpty) {
-            return 'Please enter $fieldName';
-          }
-          final num? val = num.tryParse(value);
-          if (val == null) return 'Invalid number';
-          return null;
-        },
+        child: TextFormField(
+          controller: controller,
+          keyboardType: TextInputType.number,
+          style: const TextStyle(color: Colors.black87),
+          decoration: InputDecoration(
+            prefixIcon: Icon(icon, color: Colors.blueGrey[600]),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide.none,
+            ),
+            hintText: label,
+            hintStyle: TextStyle(color: Colors.grey[600]),
+            filled: true,
+            fillColor: Colors.white,
+            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          ),
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return 'Please enter $fieldName';
+            }
+            final num? val = num.tryParse(value);
+            if (val == null) return 'Invalid number';
+            return null;
+          },
+        ),
       ),
     );
+  }
+
+  Color _getEfficiencyColor(double? value) {
+    if (value == null) return Colors.grey;
+    if (value >= 0.8) return Colors.green;
+    if (value >= 0.6) return Colors.orange;
+    return Colors.red;
+  }
+
+  String _getEfficiencyMessage(double? value) {
+    if (value == null) return '';
+    if (value >= 0.8) return 'Excellent water efficiency! Optimal conditions.';
+    if (value >= 0.6) return 'Good efficiency. Room for improvement.';
+    return 'Low efficiency. Consider optimizing conditions.';
+  }
+
+  IconData _getEfficiencyIcon(double? value) {
+    if (value == null) return Icons.help_outline;
+    if (value >= 0.8) return Icons.eco;
+    if (value >= 0.6) return Icons.warning_amber;
+    return Icons.error_outline;
   }
 
   @override
@@ -104,37 +151,192 @@ class _PredictionPageState extends State<PredictionPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Water Efficiency Predictor")),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              buildTextField("Temperature (°C)", tempController, "temperature"),
-              buildTextField("Humidity (%)", humidityController, "humidity"),
-              buildTextField("Wind Speed (km/h)", windController, "wind speed"),
-              buildTextField(
-                "Precipitation (mm)",
-                precipController,
-                "precipitation",
-              ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: isLoading ? null : predict,
-                child: isLoading
-                    ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text("Predict"),
-              ),
-              const SizedBox(height: 30),
-              Text(
-                resultMessage,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
+      backgroundColor: const Color(0xFF1A237E),
+      appBar: AppBar(
+        title: const Text("Water Efficiency Predictor"),
+        backgroundColor: const Color(0xFF1A237E),
+        foregroundColor: Colors.white,
+        elevation: 0,
+      ),
+      body: Container(
+        decoration: const BoxDecoration(
+          color: Color(0xFF1A237E),
+        ),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(20.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(16),
+                    color: Colors.grey[400],
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.2),
+                        blurRadius: 12,
+                        offset: const Offset(0, 6),
+                      ),
+                    ],
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: Column(
+                      children: [
+                        Icon(
+                          Icons.water_drop,
+                          size: 48,
+                          color: Colors.blueGrey[700],
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          "Enter Weather Conditions",
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.grey[800],
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        buildTextField(
+                          "Temperature (°C) [-10 to 45]",
+                          tempController,
+                          "temperature",
+                          Icons.thermostat,
+                        ),
+                        buildTextField(
+                          "Humidity (%) [0 to 100]",
+                          humidityController,
+                          "humidity",
+                          Icons.opacity,
+                        ),
+                        buildTextField(
+                          "Wind Speed (km/h) [0 to 50]",
+                          windController,
+                          "wind speed",
+                          Icons.air,
+                        ),
+                        buildTextField(
+                          "Precipitation (mm) [0 to 200]",
+                          precipController,
+                          "precipitation",
+                          Icons.grain,
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-              ),
-            ],
+                const SizedBox(height: 24),
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.3),
+                        blurRadius: 8,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: ElevatedButton(
+                    onPressed: isLoading ? null : predict,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.amber[600],
+                      foregroundColor: Colors.black87,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      elevation: 0,
+                    ),
+                    child: isLoading
+                      ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2,
+                          ),
+                        )
+                      : const Text(
+                          "Predict Water Efficiency",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                  ),
+                ),
+                const SizedBox(height: 24),
+                if (resultMessage.isNotEmpty)
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(16),
+                      color: Colors.grey[400],
+                      border: Border.all(
+                        color: _getEfficiencyColor(predictionValue),
+                        width: 2,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.2),
+                          blurRadius: 12,
+                          offset: const Offset(0, 6),
+                        ),
+                      ],
+                    ),
+                    padding: const EdgeInsets.all(20),
+                    child: Column(
+                        children: [
+                          Icon(
+                            _getEfficiencyIcon(predictionValue),
+                            size: 48,
+                            color: _getEfficiencyColor(predictionValue),
+                          ),
+                          const SizedBox(height: 12),
+                          Text(
+                            "Water Efficiency",
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            resultMessage,
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: _getEfficiencyColor(predictionValue),
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 8,
+                            ),
+                            decoration: BoxDecoration(
+                              color: _getEfficiencyColor(predictionValue).withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Text(
+                              _getEfficiencyMessage(predictionValue),
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                                color: _getEfficiencyColor(predictionValue),
+                              ),
+                            ),
+                          ),
+                        ],
+                    ),
+                  ),
+              ],
+            ),
           ),
         ),
       ),
