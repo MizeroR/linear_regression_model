@@ -83,7 +83,7 @@ class _PredictionPageState extends State<PredictionPage> {
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.1),
+              color: Colors.black.withValues(alpha: 0.1),
               blurRadius: 8,
               offset: const Offset(0, 4),
             ),
@@ -94,15 +94,15 @@ class _PredictionPageState extends State<PredictionPage> {
           keyboardType: TextInputType.number,
           style: const TextStyle(color: Colors.black87),
           decoration: InputDecoration(
-            prefixIcon: Icon(icon, color: Colors.blueGrey[600]),
+            prefixIcon: Icon(icon, color: const Color(0xFF4FD1C7)),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide.none,
             ),
             hintText: label,
-            hintStyle: TextStyle(color: Colors.grey[600]),
+            hintStyle: const TextStyle(color: Color(0xFF95A1A1)),
             filled: true,
-            fillColor: Colors.white,
+            fillColor: const Color(0xFFF7FAFC),
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 16,
               vertical: 16,
@@ -136,10 +136,10 @@ class _PredictionPageState extends State<PredictionPage> {
   }
 
   Color _getEfficiencyColor(double? value) {
-    if (value == null) return Colors.grey;
-    if (value >= 1.65) return Colors.green;
-    if (value >= 1.55) return Colors.orange;
-    return Colors.red;
+    if (value == null) return const Color(0xFF606868);
+    if (value >= 1.65) return Colors.green[800]!;
+    if (value >= 1.55) return Colors.orange[800]!;
+    return Colors.red[800]!;
   }
 
   String _getEfficiencyMessage(double? value) {
@@ -168,15 +168,21 @@ class _PredictionPageState extends State<PredictionPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF1A237E),
+      backgroundColor: const Color(0xFF1A1D1F),
       appBar: AppBar(
         title: const Text("Water Efficiency Predictor"),
-        backgroundColor: const Color(0xFF1A237E),
-        foregroundColor: Colors.white,
+        backgroundColor: const Color(0xFF1A1D1F),
+        foregroundColor: const Color(0xFFE8F4F8),
         elevation: 0,
       ),
       body: Container(
-        decoration: const BoxDecoration(color: Color(0xFF1A237E)),
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Color(0xFF1A1D1F), Color(0xFF242A2E)],
+          ),
+        ),
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(20.0),
           child: Form(
@@ -187,10 +193,14 @@ class _PredictionPageState extends State<PredictionPage> {
                 Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(16),
-                    color: Colors.grey[400],
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFF4A5568), Color(0xFF2D3748)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.2),
+                        color: Colors.black.withValues(alpha: 0.2),
                         blurRadius: 12,
                         offset: const Offset(0, 6),
                       ),
@@ -203,7 +213,7 @@ class _PredictionPageState extends State<PredictionPage> {
                         Icon(
                           Icons.water_drop,
                           size: 48,
-                          color: Colors.blueGrey[700],
+                          color: const Color(0xFF81E6D9),
                         ),
                         const SizedBox(height: 16),
                         Text(
@@ -211,7 +221,7 @@ class _PredictionPageState extends State<PredictionPage> {
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
-                            color: Colors.grey[800],
+                            color: const Color(0xFFF7FAFC),
                           ),
                         ),
                         const SizedBox(height: 20),
@@ -249,7 +259,7 @@ class _PredictionPageState extends State<PredictionPage> {
                     borderRadius: BorderRadius.circular(12),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.3),
+                        color: Colors.black.withValues(alpha: 0.3),
                         blurRadius: 8,
                         offset: const Offset(0, 4),
                       ),
@@ -258,8 +268,8 @@ class _PredictionPageState extends State<PredictionPage> {
                   child: ElevatedButton(
                     onPressed: isLoading ? null : predict,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.amber[600],
-                      foregroundColor: Colors.black87,
+                      backgroundColor: const Color(0xFF4FD1C7),
+                      foregroundColor: const Color(0xFF1A202C),
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
@@ -289,14 +299,14 @@ class _PredictionPageState extends State<PredictionPage> {
                   Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(16),
-                      color: Colors.grey[100],
+                      color: const Color(0xFFCBD7D1),
                       border: Border.all(
                         color: _getEfficiencyColor(predictionValue),
                         width: 2,
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.2),
+                          color: Colors.black.withValues(alpha: 0.2),
                           blurRadius: 12,
                           offset: const Offset(0, 6),
                         ),
@@ -315,7 +325,7 @@ class _PredictionPageState extends State<PredictionPage> {
                           "Water Efficiency",
                           style: TextStyle(
                             fontSize: 16,
-                            color: Colors.grey[600],
+                            color: const Color(0xFF606868),
                           ),
                         ),
                         const SizedBox(height: 8),
@@ -336,7 +346,7 @@ class _PredictionPageState extends State<PredictionPage> {
                           decoration: BoxDecoration(
                             color: _getEfficiencyColor(
                               predictionValue,
-                            ).withOpacity(0.2),
+                            ).withValues(alpha: 0.2),
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: Text(
