@@ -137,22 +137,22 @@ class _PredictionPageState extends State<PredictionPage> {
 
   Color _getEfficiencyColor(double? value) {
     if (value == null) return Colors.grey;
-    if (value >= 0.8) return Colors.green;
-    if (value >= 0.6) return Colors.orange;
+    if (value >= 1.65) return Colors.green;
+    if (value >= 1.55) return Colors.orange;
     return Colors.red;
   }
 
   String _getEfficiencyMessage(double? value) {
     if (value == null) return '';
-    if (value >= 0.8) return 'Excellent water efficiency! Optimal conditions.';
-    if (value >= 0.6) return 'Good efficiency. Room for improvement.';
+    if (value >= 1.65) return 'Excellent water efficiency! Optimal conditions.';
+    if (value >= 1.55) return 'Good efficiency. Room for improvement.';
     return 'Low efficiency. Consider optimizing conditions.';
   }
 
   IconData _getEfficiencyIcon(double? value) {
     if (value == null) return Icons.help_outline;
-    if (value >= 0.8) return Icons.eco;
-    if (value >= 0.6) return Icons.warning_amber;
+    if (value >= 1.65) return Icons.eco;
+    if (value >= 1.55) return Icons.warning_amber;
     return Icons.error_outline;
   }
 
